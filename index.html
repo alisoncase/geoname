@@ -8,30 +8,44 @@
     <!--define style for the map view and the add record button-->
     <style>
         html,
-        body,
+        body {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        }
+
+        #map-survey-container {
+        display: flex;
+        height: 100%;
+        overflow: hidden; /* Added to prevent map overflow */
+        }
+
+        .embed-container {
+        float: none; /* Remove float as we're using flexbox */
+        width: 30px; 
+        flex: 1;  /* Makes the survey container flexible and take up 40% */
+        order: 1;  /* Moves the survey container to the right (order 1) */
+        }
+
         #viewDiv {
-            padding: 0;
-            margin: 0;
-            height: 100%;
-            width: 100%;
-        }        
-        .addRecordBtn {
-            position: absolute;
-            z-index: 10;
-            top: 10px;
-            right: 10px;
-            background-color: #0079c1;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            text-decoration: none;
+        flex: 1; 
+        order: 0;  /* Keeps the map container on the left (default order) */ 
         }
-        .addRecordBtn:hover {
-            background-color: #005a87;
+
+        .embed-container iframe {
+        width: 100%; /* Scales the iframe to fit container width */
+        height: 100%; /* Scales the iframe to fit container height */
         }
+        .embed-container object,
+
+        small {
+        position: absolute;
+        z-index: 40;
+        bottom: 0;
+        margin-bottom: -15px;
+        }
+
         </style>
     <!--importing the CSS and libraries for esri.js-->
     <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css"/>
@@ -78,6 +92,7 @@
                 view: view
             });
 
+            
             // Define a pop-up for geonames places layer
             const popupPlaces = {
                 title: "Populated Place: {gaz_name}",
@@ -123,12 +138,16 @@
             view.ui.add(searchWidget, {
                 position: "bottom-right"
             });
+
+            const survey123webform = document.getElementsByName('survey123webform')[0];window.addEventListener("message",e=>{if(e.data){var t=JSON.parse(e.data);["survey123:webform:formLoaded","survey123:onFormLoaded"].includes(t.event)&&t.contentHeight&&(survey123webform.parentNode.style.height=t.contentHeight+"px")&&(survey123webform.parentNode.style["padding-bottom"]="unset")}});
          });
         </script>
   </head>
   <body>
-    <!--Add the add record button-->
-    <a href="https://arcg.is/1POHCO1"target="_blank" class="addRecordBtn">Add Record</a>
+    <!--Add the survey i frame-->
+    <div id="map-survey-container">
+        <div class="embed-container">
+            <iframe name="survey123webform" frameborder="0" marginheight="0" marginwidth="0" title="Domestic Geographic Place Name Proposal" src="//survey123.arcgis.com/share/6b990590a5e2497dba5ebae1fc279b21" allow="geolocation https://survey123.arcgis.com; camera https://survey123.arcgis.com"></iframe></div>
     <!--Add the map view-->
     <div id="viewDiv"></div>
   </body>
