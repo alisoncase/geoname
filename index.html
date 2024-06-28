@@ -1,1 +1,135 @@
+<!DOCTYPE html>
+ <html>
+  <head>
+    <!--meta for the browser to allow for mobile-first design-->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Domestic Geographic Place Name Proposal App</title>
+    <!--define style for the map view and the add record button-->
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }        
+        .addRecordBtn {
+            position: absolute;
+            z-index: 10;
+            top: 10px;
+            right: 10px;
+            background-color: #0079c1;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .addRecordBtn:hover {
+            background-color: #005a87;
+        }
+        </style>
+    <!--importing the CSS and libraries for esri.js-->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css"/>
+    <script src="https://js.arcgis.com/4.26/"></script>
+    <!--loading the modules-->
+    <script>
+        require(["esri/config", "esri/Map", "esri/views/MapView", "esri/widgets/Locate", "esri/widgets/Search", "esri/layers/FeatureLayer", "esri/layers/TileLayer", "esri/Basemap"], (esriConfig, Map, MapView, Locate, Search, FeatureLayer, TileLayer, Basemap) => {
+            // Import the API key
+            esriConfig.apiKey = "AAPK51131ceb7a344744a1876418638342eeSK8Lwr1BXfJ_rAAGMFmph-VYFJCbhVaGp2tW9m6iEHGJBjg1DFEhUf3Ay1rM_yWw";
+            
+            // Create tile layer from USGS Topo Rest Server
+            const mapBaseLayer = new TileLayer({
+                url: "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer"
+            });
+            
+            // Create basemap using tile layer
+            const customBasemap = new Basemap({
+                baseLayers: mapBaseLayer,
+                title: "USGS Topographic Map"
+            });
+
+            // Create new map object
+            const map = new Map ({
+                basemap: customBasemap
+            });
+
+            //Create new map view
+            const view = new MapView({
+                map: map, // References the map object
+                container: "viewDiv", // Reference to the DOM node that will contain the view
+                center: [-98.583333, 39.833333], // center of CONUS
+                zoom: 4 // CONUS view
+            });  
+        
+            //Create locator widget
+            const locateBtn = new Locate({
+                view: view
+            });
+            //Create search widget
+            const searchWidget = new Search({
+                maxSuggestions: 4, //Set maximum number of suggestions
+                maxResults: 4, //Set maximum number of results
+                minSuggestCharacters: 4, //Set minimum number of characters needed for suggestion
+                view: view
+            });
+
+            // Define a pop-up for geonames places layer
+            const popupPlaces = {
+                title: "Population Place: {gaz_name}",
+                // Add content in a table for easier reading
+                content: "<table><tbody><tr><td><b>GNIS Name:</b></td><td>{gaz_name}</td></tr><tr><td><b>GNIS ID:</b></td><td>{gaz_id}</td></tr><tr><td><br><b>Feature Type:</b></td><td><br>{gaz_featureclass}</td></tr><tr><td><br><b>County and State:</b></td><td><br>{county_name}, {state_alpha}</td></tr></tbody></table>"
+                }
+             // Create geonames places layer
+            const placesLayer = new FeatureLayer({
+                url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Geonames_Places_Points_v1/FeatureServer",
+                outFields: ["gaz_id","gaz_name","gaz_featureclass","state_alpha","county_name"],
+                popupTemplate: popupPlaces
+            });
+            map.add(placesLayer); 
+
+            // Define a pop-up for geonames physical points layer
+            const popupPhysical = {
+                title: "Physical Feature: {gaz_name}",
+                // Add content in a table for easier reading
+                content: "<table><tbody><tr><td><b>GNIS Name:</b></td><td>{gaz_name}</td></tr><tr><td><b>GNIS ID:</b></td><td>{gaz_id}</td></tr><tr><td><br><b>Feature Type:</b></td><td><br>{gaz_featureclass}</td></tr><tr><td><br><b>County and State:</b></td><td><br>{county_name}, {state_alpha}</td></tr></tbody></table>"
+                }
+             // Create geonames physical points layer
+            const physicalLayer = new FeatureLayer({
+                url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/ArcGIS/rest/services/Geonames_Physical_Points_v1/FeatureServer",
+                outFields: ["gaz_id","gaz_name","gaz_featureclass","state_alpha","county_name"],
+                popupTemplate: popupPhysical
+            });
+            map.add(physicalLayer); 
+
+            // Create a dummy survey layer from feature service
+            const surveylayer = new FeatureLayer({
+                // URL to the service
+                url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/survey123_887d888859a24b56b0d25662050f0f31_results/FeatureServer"
+            });                     
+            //Add survey layer to the map
+            map.add(surveylayer);
+
+            // Add the locator widget to the top left corner of the view
+            view.ui.add(locateBtn, {
+                position: "top-left"
+            });
+            // Add the search widget to the bottom right corner of the view
+            view.ui.add(searchWidget, {
+                position: "bottom-right"
+            });
+         });
+        </script>
+  </head>
+  <body>
+    <!--Add the add record button-->
+    <a href="https://arcg.is/1OfnX11"target="_blank" class="addRecordBtn">Add Record</a>
+    <!--Add the map view-->
+    <div id="viewDiv"></div>
+  </body>
+</html>
 
