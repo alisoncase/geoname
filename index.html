@@ -97,7 +97,7 @@
             const popupPlaces = {
                 title: "Populated Place: {gaz_name}",
                 // Add content in a table for easier reading
-                content: "<table><tbody><tr><td><b>GNIS Name:</b></td><td>{gaz_name}</td></tr><tr><td><b>GNIS ID:</b></td><td>{gaz_id}</td></tr><tr><td><br><b>Feature Type:</b></td><td><br>{gaz_featureclass}</td></tr><tr><td><br><b>County and State:</b></td><td><br>{county_name}, {state_alpha}</td></tr></tbody></table>"
+                content: "<table><tbody><tr><td><b>GNIS Name:</b></td><td>{gaz_name}</td></tr><tr><td><b>GNIS ID:</b></td><td>{gaz_id}</td></tr><tr><td><br><b>Feature Type:</b></td><td><br>Populated Place</td></tr><tr><td><br><b>County and State:</b></td><td><br>{county_name}, {state_alpha}</td></tr></tbody></table>"
                 }
             
             // Create geonames places layer
@@ -136,18 +136,53 @@
             });
             // Add the search widget to the bottom right corner of the view
             view.ui.add(searchWidget, {
-                position: "bottom-right"
+                position: "top-right"
             });
 
             const survey123webform = document.getElementsByName('survey123webform')[0];window.addEventListener("message",e=>{if(e.data){var t=JSON.parse(e.data);["survey123:webform:formLoaded","survey123:onFormLoaded"].includes(t.event)&&t.contentHeight&&(survey123webform.parentNode.style.height=t.contentHeight+"px")&&(survey123webform.parentNode.style["padding-bottom"]="unset")}});
-         });
+            
+            // Event listener for feature selection
+            map.on("click", function(event) {
+                if (event.layer === placesLayer) {
+                    const selectedFeature = event.graphic;
+                    const attributes = selectedFeature.attributes;
+                    const geometry = selectedFeature.geometry;
+
+                    // Prepare data object for Survey123
+                    const surveyData = {
+                    "question4": attributes.gaz_name,
+                    "question5": attributes.gaz_id,
+                    "location": geometry
+                    };
+
+                    const submissionUrl = "https://survey123.arcgis.com/share/6b990590a5e2497dba5ebae1fc279b21";
+
+                    fetch(submissionUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(surveyData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                    console.log("Survey data submitted (public endpoint):", data);
+                    // Handle success or error messages
+                    })
+                    .catch(error => {
+                    console.error("Error submitting survey data:", error);
+                    });
+                }
+            });
+        
+        });
         </script>
   </head>
   <body>
     <!--Add the survey i frame-->
     <div id="map-survey-container">
         <div class="embed-container">
-            <iframe name="survey123webform" frameborder="0" marginheight="0" marginwidth="0" title="Domestic Geographic Place Name Proposal" src="//survey123.arcgis.com/share/6b990590a5e2497dba5ebae1fc279b21" allow="geolocation https://survey123.arcgis.com; camera https://survey123.arcgis.com"></iframe></div>
+            <iframe name="survey123webform" frameborder="0" marginheight="0" marginwidth="0" title="Domestic Geographic Place Name Proposal" src="https://survey123.arcgis.com/share/6b990590a5e2497dba5ebae1fc279b21" allow="geolocation https://survey123.arcgis.com; camera https://survey123.arcgis.com"></iframe></div>
     <!--Add the map view-->
     <div id="viewDiv"></div>
   </body>
