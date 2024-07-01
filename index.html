@@ -24,7 +24,7 @@
         .embed-container {
         float: none; /* Remove float as we're using flexbox */
         width: 30px; 
-        flex: 1;  /* Makes the survey container flexible and take up 40% */
+        flex: 1;  /* Makes the survey container flexible */
         order: 1;  /* Moves the survey container to the right (order 1) */
         }
 
@@ -52,7 +52,7 @@
     <script src="https://js.arcgis.com/4.26/"></script>
     <!--loading the modules-->
     <script>
-        require(["esri/config", "esri/Map", "esri/views/MapView", "esri/widgets/Locate", "esri/widgets/Search", "esri/layers/FeatureLayer", "esri/layers/TileLayer", "esri/Basemap"], (esriConfig, Map, MapView, Locate, Search, FeatureLayer, TileLayer, Basemap) => {
+        require(["esri/config", "esri/Map", "esri/views/MapView", "esri/widgets/Locate", "esri/widgets/Search", "esri/layers/FeatureLayer", "esri/layers/TileLayer", "esri/Basemap", "esri/widgets/CoordinateConversion"], (esriConfig, Map, MapView, Locate, Search, FeatureLayer, TileLayer, Basemap, CoordinateConversion) => {
             // Import the API key
             esriConfig.apiKey = "AAPK51131ceb7a344744a1876418638342eeSK8Lwr1BXfJ_rAAGMFmph-VYFJCbhVaGp2tW9m6iEHGJBjg1DFEhUf3Ay1rM_yWw";
             
@@ -92,6 +92,13 @@
                 view: view
             });
 
+            // Create coordinates widget to display coordinates when hovering
+            const ccWidget = new CoordinateConversion({
+                view: view
+            });
+            // Modify coordinate widget to only show XY format
+            const toRemove = ccWidget.formats.filter(format => format.name !== "xy");
+            ccWidget.formats.removeMany(toRemove);
             
             // Define a pop-up for geonames places layer
             const popupPlaces = {
@@ -134,48 +141,17 @@
             view.ui.add(locateBtn, {
                 position: "top-left"
             });
-            // Add the search widget to the bottom right corner of the view
+            // Add the search widget to the top right right corner of the view
             view.ui.add(searchWidget, {
                 position: "top-right"
             });
-
-            const survey123webform = document.getElementsByName('survey123webform')[0];window.addEventListener("message",e=>{if(e.data){var t=JSON.parse(e.data);["survey123:webform:formLoaded","survey123:onFormLoaded"].includes(t.event)&&t.contentHeight&&(survey123webform.parentNode.style.height=t.contentHeight+"px")&&(survey123webform.parentNode.style["padding-bottom"]="unset")}});
-            
-            // Event listener for feature selection
-            map.on("click", function(event) {
-                if (event.layer === placesLayer) {
-                    const selectedFeature = event.graphic;
-                    const attributes = selectedFeature.attributes;
-                    const geometry = selectedFeature.geometry;
-
-                    // Prepare data object for Survey123
-                    const surveyData = {
-                    "question4": attributes.gaz_name,
-                    "question5": attributes.gaz_id,
-                    "location": geometry
-                    };
-
-                    const submissionUrl = "https://survey123.arcgis.com/share/6b990590a5e2497dba5ebae1fc279b21";
-
-                    fetch(submissionUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(surveyData)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                    console.log("Survey data submitted (public endpoint):", data);
-                    // Handle success or error messages
-                    })
-                    .catch(error => {
-                    console.error("Error submitting survey data:", error);
-                    });
-                }
+            // Add the coordinates widget to the bottom left of the view
+            view.ui.add(ccWidget, "bottom-left");
             });
-        
-        });
+
+            const survey123webform = document.getElementsByName('survey123webform')[0];window.addEventListener("message",e=>{if(e.data){var t=JSON.parse(e.data);["survey123:webform:formLoaded","survey123:onFormLoaded"].includes(t.event)&&t.contentHeight&&(survey123webform.parentNode.style.height=t.contentHeight+"px")&&(survey123webform.parentNode.style["padding-bottom"]="unset")}
+        });           
+
         </script>
   </head>
   <body>
@@ -187,4 +163,3 @@
     <div id="viewDiv"></div>
   </body>
 </html>
-
