@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>Domestic Geographic Place Name Proposal App</title>
-    <!--define style for the map view and the add record button-->
+    <!--define style for the map view and survey container-->
     <style>
         html,
         body {
@@ -130,12 +130,12 @@
             map.add(physicalLayer); 
 
             // Create a survey layer of the form from feature service
-            const surveylayer = new FeatureLayer({
+            //const surveylayer = new FeatureLayer({
                 // URL to the service
-                url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/service_f927f2b3448a4c0a80aae75b9ed2dbd5/FeatureServer"
-            });                     
+              //  url: "https://services.arcgis.com/HRPe58bUyBqyyiCt/arcgis/rest/services/service_f927f2b3448a4c0a80aae75b9ed2dbd5/FeatureServer"
+            //});                     
             //Add survey layer to the map
-            map.add(surveylayer);
+            //map.add(surveylayer);
 
             // Add the locator widget to the top left corner of the view
             view.ui.add(locateBtn, {
@@ -155,7 +155,7 @@
         </script>
   </head>
   <body>
-    <!--Add the survey i frame-->
+    <!--Add the survey iframe-->
     <div id="map-survey-container">
         <div class="embed-container">
             <iframe name="survey123webform" frameborder="0" marginheight="0" marginwidth="0" title="Domestic Geographic Place Name Proposal" src="https://survey123.arcgis.com/share/90c76751c7124bdc91e37c47ee6f6cc1" allow="geolocation https://survey123.arcgis.com; camera https://survey123.arcgis.com"></iframe></div>
