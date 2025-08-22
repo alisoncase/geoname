@@ -58,7 +58,7 @@
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
-        })
+        })  
         .then(config => {
             require(["esri/config", "esri/Map", "esri/views/MapView", "esri/widgets/Locate", "esri/widgets/Search", "esri/layers/FeatureLayer", "esri/layers/TileLayer", "esri/Basemap", "esri/widgets/CoordinateConversion"], (esriConfig, Map, MapView, Locate, Search, FeatureLayer, TileLayer, Basemap, CoordinateConversion) => {
                 // Use the API key from the config file
