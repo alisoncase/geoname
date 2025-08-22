@@ -52,17 +52,9 @@
     <script src="https://js.arcgis.com/4.26/"></script>
     <!--loading the modules-->
     <script>
-        fetch('./config.json') // Use the relative path to the config.json file
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })  
-        .then(config => {
             require(["esri/config", "esri/Map", "esri/views/MapView", "esri/widgets/Locate", "esri/widgets/Search", "esri/layers/FeatureLayer", "esri/layers/TileLayer", "esri/Basemap", "esri/widgets/CoordinateConversion"], (esriConfig, Map, MapView, Locate, Search, FeatureLayer, TileLayer, Basemap, CoordinateConversion) => {
-                // Use the API key from the config file
-                esriConfig.apiKey = config.ESRI_API_KEY_OLD || config.ESRI_API_KEY;
+                // Embed the API key directly
+                esriConfig.apiKey = "AAPT85fOqywZsicJupSmVSCGrlQZ_um5s11am2MJRK50IAR3xtR519cQSMF61_Cwtipo8VD4HUhY22rn7cs0VKH0-i_VJ-9FkPdO9Rg0Ufo63dTWPL-idDhQVhRPHztWpcL5lBSr_KqN_x2pBiSPv_UqQ8kio9h1YJFVFjaU4aqynqJnlo_GJPTy9hYlGdyzKcvlxEZQ4dLBjWP3AuN-vGMPWisvv9aZHPBKoZvmwVgqQ7gqOTO4b0vnuwzZZQnAw6OFAT2_ysJ1LHKZ" || "AAPK51131ceb7a344744a1876418638342eeSK8Lwr1BXfJ_rAAGMFmph-VYFJCbhVaGp2tW9m6iEHGJBjg1DFEhUf3Ay1rM_yWw";
 
                 // Create tile layer from USGS Topo Rest Server
                 const mapBaseLayer = new TileLayer({
@@ -151,7 +143,7 @@
 
                 const survey123webform = document.getElementsByName('survey123webform')[0];window.addEventListener("message",e=>{if(e.data){var t=JSON.parse(e.data);["survey123:webform:formLoaded","survey123:onFormLoaded"].includes(t.event)&&t.contentHeight&&(survey123webform.parentNode.style.height=t.contentHeight+"px")&&(survey123webform.parentNode.style["padding-bottom"]="unset")}
             })
-        })
+
         .catch(error => {
             console.error('Error fetching config.json:', error);
         });           
